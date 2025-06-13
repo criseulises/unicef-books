@@ -1,5 +1,21 @@
 @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.shadow-button-header {
+  /* Sombra base */
+  box-shadow: 
+    0 0 0 0,
+    0 0 0 0;
+  transition: box-shadow 0.25s ease-in-out;
+}
+
+/* Sombra al pasar el ratón */
+.shadow-button-header:hover {
+  box-shadow: 
+    0 10px 60px rgba(0, 0, 0, 0.25),
+    0 5px 5px rgba(0, 0, 0, 0.20);
+}

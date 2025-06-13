@@ -1,4 +1,4 @@
-'use client'
+"use client"
 import { useState } from 'react'
 import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react'
 
@@ -25,26 +25,28 @@ export default function BookReader({
   }
 
   return (
-    <div className="flex-1 flex items-center justify-center bg-background p-6 space-x-4">
+    <div className="flex-1 flex items-center justify-center bg-background p-8">
+      {/* Flecha anterior sin círculo */}
       <button
         onClick={() => current > 0 && go(current - 1)}
         disabled={current === 0}
-        className={`flex-shrink-0 w-12 h-12 rounded-full bg-white shadow-lg border flex items-center justify-center transition ${
+        className={`p-2 transition ${
           current === 0
             ? 'opacity-50 cursor-not-allowed'
-            : 'hover:bg-primary-50 hover:border-primary-200 hover:shadow-xl'
+            : 'text-primary-600 hover:text-primary-700'
         }`}
       >
-        <ChevronLeftIcon className={`w-6 h-6 ${current === 0 ? 'text-neutral-400' : 'text-primary-600'}`} />
+        <ChevronLeftIcon className="w-10 h-10 mx-5" />
       </button>
 
-      <div className="relative w-full max-w-4xl rounded-2xl overflow-hidden shadow-2xl border-2 border-primary-600">
+      {/* Contenedor del libro */}
+      <div className="relative w-full max-w-6xl rounded-2xl overflow-hidden shadow-2xl border-2 border-primary-600">
         <img
           src={pages[current].imageUrl}
           alt={`Página ${current + 1}`}
           className="w-full object-cover"
         />
-
+        {/* Texto sobre la imagen */}
         <div
           className="absolute text-white font-bold drop-shadow-lg"
           style={{
@@ -62,16 +64,17 @@ export default function BookReader({
         </div>
       </div>
 
+      {/* Flecha siguiente sin círculo */}
       <button
         onClick={() => current < last && go(current + 1)}
         disabled={current === last}
-        className={`flex-shrink-0 w-12 h-12 rounded-full bg-white shadow-lg border flex items-center justify-center transition ${
+        className={`p-2 transition ${
           current === last
             ? 'opacity-50 cursor-not-allowed'
-            : 'hover:bg-primary-50 hover:border-primary-200 hover:shadow-xl'
+            : 'text-primary-600 hover:text-primary-700'
         }`}
       >
-        <ChevronRightIcon className={`w-6 h-6 ${current === last ? 'text-neutral-400' : 'text-primary-600'}`} />
+        <ChevronRightIcon className="w-10 h-10 mx-5" />
       </button>
     </div>
   )
