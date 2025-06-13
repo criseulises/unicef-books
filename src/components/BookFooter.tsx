@@ -112,7 +112,7 @@ export default function BookFooter({
             
             {/* Círculo indicador en la punta del progreso */}
             <div
-              className="absolute top-[14] -translate-y-1/2 w-4 h-4 bg-primary-700 rounded-full "
+              className="absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-primary-700 rounded-full "
               style={{
                 left: `calc(${(current / total) * 100}% - 8px)`, // -8px para centrar el círculo
               }}
