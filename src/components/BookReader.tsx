@@ -45,7 +45,7 @@ export default function BookReader({
       </button>
 
       {/* Contenedor del libro */}
-      <div className="relative w-full max-w-6xl rounded-2xl overflow-hidden shadow-2xl border-4 border-[#647411]">
+      <div className="relative w-full max-w-6xl rounded-2xl overflow-hidden  border-4 border-[#647411]">
         <Image
           src={page.imageUrl}
           alt={`Página ${current + 1}`}

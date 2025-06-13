@@ -24,15 +24,12 @@ export default function BookFooter({
   const [isPlaying, setIsPlaying] = useState(false)
   const skipSeconds = 5
 
-  // Al terminar el audio, actualizamos el estado
   useEffect(() => {
     const audio = audioRef.current
     if (!audio) return
     const onEnded = () => setIsPlaying(false)
     audio.addEventListener('ended', onEnded)
-    return () => {
-      audio.removeEventListener('ended', onEnded)
-    }
+    return () => audio.removeEventListener('ended', onEnded)
   }, [])
 
   const togglePlay = () => {
@@ -60,25 +57,23 @@ export default function BookFooter({
   }
 
   return (
-    <footer className="bg-white border-t px-6 py-4">
-      {/* Elemento de audio oculto */}
+    <footer className="px-6 pb-10">
       <audio ref={audioRef} src={audioSrc} preload="metadata" />
 
       <div className="max-w-6xl mx-auto flex items-center space-x-6">
-        {/* Reproductor (compacto) */}
-        <div className="flex-shrink-0 flex items-center space-x-6">
+        {/* Controles de audio */}
+        <div className="flex-shrink-0 flex items-center space-x-4">
           <button
             aria-label="Atrás 5s"
             onClick={handleSkipBack}
-            className="w-8 h-8 text-primary-600 hover:text-primary-700"
+            className="w-8 h-8 fill-primary-700 hover:fill-primary-800 transition-colors"
           >
             <SkipBackIcon className="w-6 h-6" />
           </button>
-
           <button
             aria-label={isPlaying ? 'Pausa' : 'Reproducir'}
             onClick={togglePlay}
-            className="w-10 h-10 text-primary-600 hover:text-primary-700"
+            className="w-10 h-10 fill-primary-700 hover:fill-primary-800 transition-colors"
           >
             {isPlaying ? (
               <PauseIcon className="w-8 h-8" />
@@ -86,32 +81,51 @@ export default function BookFooter({
               <PlayIcon className="w-8 h-8" />
             )}
           </button>
-
           <button
             aria-label="Adelante 5s"
             onClick={handleSkipForward}
-            className="w-8 h-8 text-primary-600 hover:text-primary-700"
+            className="w-8 h-8 fill-primary-700 hover:fill-primary-800 transition-colors"
           >
             <SkipForwardIcon className="w-6 h-6" />
           </button>
         </div>
 
-        {/* Barra de progreso de páginas */}
-        <div className="flex-1 relative">
-          <input
-            type="range"
-            min={1}
-            max={total}
-            value={current}
-            onChange={(e) => {
-              const idx = parseInt(e.currentTarget.value, 10) - 1
-              onSeekPage?.(idx)
-            }}
-            className="w-full accent-primary-600"
-          />
-          <span className="absolute right-0 top-0 text-xs text-primary-600">
-            pag {current}/{total}
-          </span>
+        {/* Barra de progreso con texto posicionado */}
+        <div className="relative flex-1">
+          <div className="relative">
+            <progress
+              value={current}
+              max={total}
+              className="
+                w-full h-2
+                appearance-none
+                [&::-webkit-progress-bar]:bg-primary-300
+                [&::-webkit-progress-bar]:rounded-full
+                [&::-webkit-progress-value]:bg-primary-700
+                [&::-webkit-progress-value]:rounded-full
+                [&::-moz-progress-bar]:bg-primary-700
+                [&::-moz-progress-bar]:rounded-full
+              "
+              style={{
+                backgroundColor: '#83AFFF', // fallback para primary-300
+              }}
+            />
+            
+            {/* Círculo indicador en la punta del progreso */}
+            <div
+              className="absolute top-[14] -translate-y-1/2 w-4 h-4 bg-primary-700 rounded-full "
+              style={{
+                left: `calc(${(current / total) * 100}% - 8px)`, // -8px para centrar el círculo
+              }}
+            />
+          </div>
+          
+          {/* Texto posicionado en la esquina inferior derecha de la barra */}
+          <div className="absolute -bottom-6 right-0">
+            <span className="text-xs text-primary-700 font-medium">
+              pag {current}/{total}
+            </span>
+          </div>
         </div>
       </div>
     </footer>
