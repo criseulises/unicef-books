@@ -18,7 +18,6 @@ export default function BookFooter({
   current,
   total,
   audioSrc,
-  onSeekPage,
 }: BookFooterProps) {
   const audioRef = useRef<HTMLAudioElement>(null)
   const [isPlaying, setIsPlaying] = useState(false)
