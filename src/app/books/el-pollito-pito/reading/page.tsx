@@ -11,12 +11,16 @@ export default function ReadingPage() {
          imageUrl: "/images/pollito/pagina1.jpg",
          text: "El pollito pito\nNosotros somos en el parque\nTomando todo",
          textPosition: { top: "10%", left: "5%" },
+         textBgColor: '#647411', // el color deseado
+
       },
       {
          id: 2,
          imageUrl: "/images/pollito/pagina2.jpg",
          text: "El pollito Pito encontró una fruta deliciosa",
          textPosition: { top: "15%", left: "10%" },
+         textBgColor: '#647411)', // el color deseado
+
       },
    ];
 
