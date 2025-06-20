@@ -25,15 +25,19 @@ export interface BookPage {
   audioUrl?: string
 }
 
+interface BookReaderProps {
+  pages: BookPage[]
+  currentPage: number
+  onChangePage: (idx: number) => void
+  textSize?: number // ✅ Nueva prop para el tamaño del texto
+}
+
 export default function BookReader({
   pages,
   currentPage,
   onChangePage,
-}: {
-  pages: BookPage[]
-  currentPage: number
-  onChangePage: (idx: number) => void
-}) {
+  textSize = 16, // ✅ Valor por defecto
+}: BookReaderProps) {
   const [showVideo, setShowVideo] = useState(false)
   const [showControls, setShowControls] = useState(false)
   const [isPlaying, setIsPlaying] = useState(false)
@@ -128,11 +132,13 @@ export default function BookReader({
               {page.text.split('\n').map((line,i)=>
                 <span
                   key={i}
-                  className="font-quicksand text-white font-semibold text-sm md:text-base lg:text-lg inline-block px-2 py-1"
+                  className="font-quicksand text-white font-semibold inline-block px-2 py-1"
                   style={{
                     backgroundColor: page.textBgColor ?? 'rgba(0,0,0,0.5)',
                     boxDecorationBreak: 'clone',
                     WebkitBoxDecorationBreak: 'clone',
+                    fontSize: `${textSize}px`, // ✅ Aplicar tamaño dinámico
+                    lineHeight: '1.4', // ✅ Mantener buena legibilidad
                   }}
                 >
                   {line}

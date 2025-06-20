@@ -79,8 +79,8 @@ export default function AccessibilitySidebar({
         {/* Tamaño de Texto */}
         <section className="mb-6">
           <div className="flex items-center justify-between mb-3">
-            <label className="text-blue-600 font-medium">Tamaño de la Imagen</label>
-            <span className="text-blue-600 font-medium text-sm">{textSize}</span>
+            <label className="text-blue-600 font-medium">Tamaño del Texto</label>
+            <span className="text-blue-600 font-medium text-sm">{textSize}px</span>
           </div>
           
           <div className="flex items-center mb-3">

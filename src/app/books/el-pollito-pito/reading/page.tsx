@@ -130,7 +130,8 @@ export default function ReadingPage() {
         <BookReader 
           pages={pages} 
           currentPage={current}
-          onChangePage={handlePageChange} 
+          onChangePage={handlePageChange}
+          textSize={textSize} // ✅ Pasar el tamaño del texto
         />
       </div>
 
