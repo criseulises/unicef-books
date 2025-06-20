@@ -15,22 +15,26 @@ import ExpandContent      from '@/icons/ExpandContent'
 
 export interface BookPage {
   id: number
+  title?: string
   imageUrl: string
   text: string
   textPosition?: Partial<Record<'top'|'left'|'right'|'bottom',string>>
   textBgColor?: string
   videoWebmUrl?: string
   videoMp4Url?:  string
+  audioUrl?: string
 }
 
 export default function BookReader({
   pages,
+  currentPage,     // ✅ Recibir página actual del padre
   onChangePage,
 }: {
   pages: BookPage[]
+  currentPage: number    // ✅ Nueva prop
   onChangePage: (idx: number) => void
 }) {
-  const [current, setCurrent]     = useState(0)
+  // ✅ Eliminar estado local 'current' - usar 'currentPage' del padre
   const [showVideo, setShowVideo] = useState(false)
   const [showControls, setShowControls] = useState(false)
   const [isPlaying, setIsPlaying] = useState(false)
@@ -38,7 +42,7 @@ export default function BookReader({
   const videoRef = useRef<HTMLVideoElement>(null)
 
   const last = pages.length - 1
-  const page = pages[current]
+  const page = pages[currentPage] // ✅ Usar currentPage en lugar de current
 
   // Auto-play when you open
   useEffect(() => {
@@ -51,9 +55,15 @@ export default function BookReader({
     }
   }, [showVideo])
 
+  // ✅ Limpiar video cuando cambia de página
+  useEffect(() => {
+    setShowVideo(false)
+    setShowControls(false)
+    setIsPlaying(false)
+  }, [currentPage])
+
   const go = (idx: number) => {
-    setCurrent(idx)
-    onChangePage(idx)
+    onChangePage(idx)  // ✅ Solo llamar a la función del padre
     setShowVideo(false)
     setShowControls(false)
   }
@@ -69,11 +79,11 @@ export default function BookReader({
     <div className="flex-1 flex items-center justify-center bg-background p-8 relative">
       {/* ← Prev */}
       <button
-        onClick={() => current > 0 && go(current-1)}
-        disabled={current === 0}
+        onClick={() => currentPage > 0 && go(currentPage-1)} // ✅ usar currentPage
+        disabled={currentPage === 0}
         className={`
           p-2 transition
-          ${current===0
+          ${currentPage===0
              ? 'opacity-50 cursor-not-allowed'
              : 'text-primary-600 hover:text-primary-700'}
         `}
@@ -85,7 +95,7 @@ export default function BookReader({
       <div className="relative w-full max-w-6xl rounded-2xl overflow-hidden border-4 border-[#647411]">
         <Image
           src={page.imageUrl}
-          alt={`Página ${current+1}`}
+          alt={`Página ${currentPage+1}`} // ✅ usar currentPage
           width={1500} height={754}
           className="w-full object-cover"
           priority
@@ -162,7 +172,7 @@ export default function BookReader({
                     <source src={page.videoWebmUrl} type="video/webm"/>
                     <source src={page.videoMp4Url } type="video/mp4" />
                     {/* fallback message */}
-                    Your browser doesn’t support embedded videos.
+                    Your browser no support embedded videos.
                   </video>
                   <button
                     onClick={()=>setShowVideo(false)}
@@ -177,11 +187,11 @@ export default function BookReader({
 
       {/* → Next */}
       <button
-        onClick={() => current<last && go(current+1)}
-        disabled={current===last}
+        onClick={() => currentPage<last && go(currentPage+1)} // ✅ usar currentPage
+        disabled={currentPage===last}
         className={`
           p-2 transition
-          ${current===last
+          ${currentPage===last
              ? 'opacity-50 cursor-not-allowed'
              : 'text-primary-600 hover:text-primary-700'}
         `}

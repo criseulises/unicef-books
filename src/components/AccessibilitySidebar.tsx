@@ -2,7 +2,6 @@
 "use client";
 import React from "react";
 import { Volume2Icon, ImageIcon } from "lucide-react";
-import AccessibilityIcon from "@/icons/AccessibilityIcon";
 
 interface Props {
   contrast: number; // 0..4

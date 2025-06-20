@@ -1,5 +1,5 @@
 'use client'
-import React, { useState, useRef, useEffect } from 'react'
+import React, {  useEffect } from 'react'
 import {
   SkipBackIcon,
   PlayIcon,
@@ -10,21 +10,20 @@ import {
 interface BookFooterProps {
   current: number
   total: number
-  audioRef: React.RefObject<HTMLAudioElement>  // ✅ Usar el audioRef del padre
+  audioRef: React.RefObject<HTMLAudioElement | null>  // ✅ Permitir null
   audioSrc: string
-  narrationOn: boolean                         // ✅ Estado de narración del padre
-  onToggleNarration: () => void               // ✅ Función del padre
+  narrationOn: boolean
+  onToggleNarration: () => void
   onSeekPage?: (idx: number) => void
 }
 
 export default function BookFooter({
   current,
   total,
-  audioRef,        // ✅ audioRef viene del padre
+  audioRef,
   audioSrc,
-  narrationOn,     // ✅ Estado sincronizado
-  onToggleNarration, // ✅ Función sincronizada
-  onSeekPage,
+  narrationOn,
+  onToggleNarration,
 }: BookFooterProps) {
   const skipSeconds = 5
 

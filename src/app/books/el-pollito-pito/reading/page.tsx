@@ -15,9 +15,9 @@ export default function ReadingPage() {
       text: "El pollito pito\nNosotros somos en el parque\nTomando todo",
       textPosition: { top: "10%", left: "5%" },
       textBgColor: "#647411",
-      videoWebmUrl: "/videos/pollito-senas-1.webm",
-      videoMp4Url: "/videos/pollito-senas-1.mp4",
-      audioUrl: "/audios/PollitoPito_Pagina3.wav", // ✅ Usar el que existe
+      videoWebmUrl: "/videos/pollito-senas-3.webm",
+      videoMp4Url: "/videos/pollito-senas-3.mp4",
+      audioUrl: "/audios/PollitoPito_Pagina3.wav", // ✅ Este sí existe
     },
     {
       id: 2,
@@ -25,10 +25,11 @@ export default function ReadingPage() {
       text: "Segunda página del pollito",
       textPosition: { top: "15%", left: "10%" },
       textBgColor: "#647411",
-      videoWebmUrl: "/videos/pollito-senas-1.webm",
-      videoMp4Url: "/videos/pollito-senas-1.mp4",
-      audioUrl: "/audios/PollitoPito_Pagina3.wav", // ✅ Usar el que existe temporalmente
+      videoWebmUrl: "/videos/pollito-senas-3.webm",
+      videoMp4Url: "/videos/pollito-senas-3.mp4",
+      audioUrl: "/audios/PollitoPito_Pagina3.wav", // ✅ Este sí existe
     },
+
     // ... más páginas con sus respectivos audios
   ];
 
@@ -47,7 +48,7 @@ export default function ReadingPage() {
   const [imageScale, setImageScale] = useState(1);
   const [audioSpeed, setAudioSpeed] = useState(1);
 
-  // 2. Función para alternar la narración
+  // 2. Función para alternar la narración con manejo de errores
   const toggleNarration = () => {
     const audio = audioRef.current;
     if (!audio) return;
@@ -56,13 +57,20 @@ export default function ReadingPage() {
       audio.pause();
       setNarrationOn(false);
     } else {
-      // Si activamos la narración, reproducir inmediatamente
-      audio.play().catch(console.error);
-      setNarrationOn(true);
+      // Verificar si el audio tiene una fuente válida
+      if (audio.src && audio.src !== window.location.href) {
+        audio.play().catch((error) => {
+          console.log("Audio no disponible:", error);
+          // No cambiar el estado si hay error
+        });
+        setNarrationOn(true);
+      } else {
+        console.log("No hay audio disponible para esta página");
+      }
     }
   };
 
-  // 3. Función para cambiar de página con auto-reproducción
+  // 3. Función para cambiar de página con auto-reproducción y manejo de errores
   const handlePageChange = (pageIndex: number) => {
     setCurrent(pageIndex);
     
@@ -70,11 +78,14 @@ export default function ReadingPage() {
     if (narrationOn) {
       setTimeout(() => {
         const audio = audioRef.current;
-        if (audio) {
+        if (audio && pages[pageIndex]?.audioUrl) {
           audio.load(); // Recargar el nuevo src
-          audio.play().catch(console.error);
+          audio.play().catch((error) => {
+            console.log("Audio no disponible para esta página:", error);
+            // Mantener la narración activa para la próxima página que sí tenga audio
+          });
         }
-      }, 100); // Pequeño delay para asegurar que el src se haya actualizado
+      }, 100);
     }
   };
 
@@ -113,7 +124,11 @@ export default function ReadingPage() {
         onToggleAccessibility={toggleAccessibility}
       />
 
-      <BookReader pages={pages} onChangePage={handlePageChange} />
+      <BookReader 
+        pages={pages} 
+        currentPage={current}     // ✅ Pasar página actual
+        onChangePage={handlePageChange} 
+      />
 
       <BookFooter
         current={current + 1}
