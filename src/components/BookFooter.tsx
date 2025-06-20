@@ -10,43 +10,49 @@ import {
 interface BookFooterProps {
   current: number
   total: number
+  audioRef: React.RefObject<HTMLAudioElement>  // ✅ Usar el audioRef del padre
   audioSrc: string
+  narrationOn: boolean                         // ✅ Estado de narración del padre
+  onToggleNarration: () => void               // ✅ Función del padre
   onSeekPage?: (idx: number) => void
 }
 
 export default function BookFooter({
   current,
   total,
+  audioRef,        // ✅ audioRef viene del padre
   audioSrc,
+  narrationOn,     // ✅ Estado sincronizado
+  onToggleNarration, // ✅ Función sincronizada
+  onSeekPage,
 }: BookFooterProps) {
-  const audioRef = useRef<HTMLAudioElement>(null)
-  const [isPlaying, setIsPlaying] = useState(false)
   const skipSeconds = 5
 
+  // ✅ Efecto para manejar cuando el audio termina
   useEffect(() => {
     const audio = audioRef.current
     if (!audio) return
-    const onEnded = () => setIsPlaying(false)
+    
+    const onEnded = () => {
+      // ✅ CAMBIO: No desactivar la narración cuando termine naturalmente
+      // La narración se mantiene activa para auto-reproducir la siguiente página
+      // Solo se desactiva cuando el usuario hace click en pause manualmente
+      console.log("Audio terminó - narración sigue activa para próxima página")
+    }
+    
     audio.addEventListener('ended', onEnded)
     return () => audio.removeEventListener('ended', onEnded)
-  }, [])
+  }, [audioRef])
 
+  // ✅ Usar la función del padre en lugar de una local
   const togglePlay = () => {
-    const audio = audioRef.current
-    if (!audio) return
-    if (!isPlaying) {
-      audio.play()
-      setIsPlaying(true)
-    } else {
-      audio.pause()
-      setIsPlaying(false)
-    }
+    onToggleNarration()
   }
 
   const handleSkipForward = () => {
     const audio = audioRef.current
     if (!audio) return
-    audio.currentTime = Math.min(audio.currentTime + skipSeconds, audio.duration)
+    audio.currentTime = Math.min(audio.currentTime + skipSeconds, audio.duration || 0)
   }
 
   const handleSkipBack = () => {
@@ -57,6 +63,7 @@ export default function BookFooter({
 
   return (
     <footer className="px-6 pb-10">
+      {/* ✅ El audio se maneja en el componente padre */}
       <audio ref={audioRef} src={audioSrc} preload="metadata" />
 
       <div className="max-w-6xl mx-auto flex items-center space-x-6">
@@ -70,11 +77,11 @@ export default function BookFooter({
             <SkipBackIcon className="w-6 h-6" />
           </button>
           <button
-            aria-label={isPlaying ? 'Pausa' : 'Reproducir'}
+            aria-label={narrationOn ? 'Pausa' : 'Reproducir'}
             onClick={togglePlay}
             className="w-10 h-10 fill-primary-700 hover:fill-primary-800 transition-colors"
           >
-            {isPlaying ? (
+            {narrationOn ? (
               <PauseIcon className="w-8 h-8" />
             ) : (
               <PlayIcon className="w-8 h-8" />
