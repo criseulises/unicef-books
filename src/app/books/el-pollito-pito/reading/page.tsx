@@ -15,8 +15,8 @@ export default function ReadingPage() {
       text: "El pollito pito\nNosotros somos en el parque\nTomando todo",
       textPosition: { top: "10%", left: "5%" },
       textBgColor: "#647411",
-      videoWebmUrl: "/videos/pollito-senas-2.webm",
-      videoMp4Url: "/videos/pollito-senas-2.mp4",
+      videoWebmUrl: "/videos/pollito-senas-1.webm",
+      videoMp4Url: "/videos/pollito-senas-1.mp4",
       audioUrl: "/audios/PollitoPito_Pagina3.wav", // ✅ Usar el que existe temporalmente
     },
     {
@@ -25,8 +25,8 @@ export default function ReadingPage() {
       text: "Segunda página del pollito",
       textPosition: { top: "15%", left: "10%" },
       textBgColor: "#647411",
-      videoWebmUrl: "/videos/pollito-senas-2.webm",
-      videoMp4Url: "/videos/pollito-senas-2.mp4",
+      videoWebmUrl: "/videos/pollito-senas-1.webm",
+      videoMp4Url: "/videos/pollito-senas-1.mp4",
       audioUrl: "/audios/PollitoPito_Pagina3.wav", // ✅ Usar el que existe temporalmente
     },
 

@@ -43,35 +43,47 @@ export default function BookReader({
   const last = pages.length - 1
   const page = pages[currentPage]
 
-  // Auto-play when you open
+  // Auto-play cuando se abre el video O cuando cambia de página y el video está activo
   useEffect(() => {
-    if (showVideo && videoRef.current) {
+    if (showVideo && videoRef.current && page.videoWebmUrl && page.videoMp4Url) {
       videoRef.current.currentTime = 0
-      videoRef.current.play()
-      setIsPlaying(true)
-    } else {
-      setIsPlaying(false)
+      if (isPlaying) {
+        videoRef.current.play()
+      }
     }
-  }, [showVideo])
+  }, [showVideo, currentPage]) // Agregamos currentPage como dependencia
 
-  // Limpiar video cuando cambia de página
-  useEffect(() => {
-    setShowVideo(false)
-    setShowControls(false)
-    setIsPlaying(false)
-  }, [currentPage])
+  // NO limpiar video automáticamente cuando cambia de página
+  // Solo limpiar si el usuario lo hace manualmente
 
   const go = (idx: number) => {
     onChangePage(idx)
-    setShowVideo(false)
-    setShowControls(false)
+    // NO resetear showVideo, showControls, ni isPlaying
+    // Se mantienen activos entre páginas
   }
 
   const togglePlay = () => {
     const v = videoRef.current
     if (!v) return
-    if (isPlaying) { v.pause(); setIsPlaying(false) }
-    else           { v.play();  setIsPlaying(true)  }
+    
+    if (isPlaying) {
+      // Si está reproduciendo, pausar
+      v.pause()
+      setIsPlaying(false)
+    } else {
+      // Si está pausado o terminado, reproducir desde el inicio
+      v.currentTime = 0
+      v.play()
+      setIsPlaying(true)
+    }
+  }
+
+  const handleVideoEnd = () => {
+    // Cuando el video termina, volver al inicio y marcar como detenido
+    if (videoRef.current) {
+      videoRef.current.currentTime = 0
+    }
+    setIsPlaying(false)
   }
 
   return (
@@ -134,17 +146,30 @@ export default function BookReader({
             <>
               <button
                 onClick={() => {
-                  setShowControls(c=>!c)
-                  setShowVideo(true)
+                  if (showVideo) {
+                    // Si el video está abierto, cerrarlo completamente
+                    setShowVideo(false)
+                    setShowControls(false)
+                    setIsPlaying(false)
+                    if (videoRef.current) {
+                      videoRef.current.pause()
+                      videoRef.current.currentTime = 0
+                    }
+                  } else {
+                    // Si el video está cerrado, abrirlo y empezar a reproducir
+                    setShowVideo(true)
+                    setShowControls(true)
+                    setIsPlaying(true) // Automáticamente en play
+                  }
                 }}
                 className="absolute bottom-3 right-3 z-10 w-10 h-10 lg:w-12 lg:h-12 flex items-center justify-center rounded-full bg-primary-50 hover:bg-primary-100 transition cursor-pointer shadow-md"
               >
                 <SignLanguageIcon className="text-primary-600"/>
               </button>
 
-              {/* two extra buttons pop up above */}
+              {/* Botones de control arriba del botón de sign language */}
               {showControls && (
-                <div className="absolute bottom-16 lg:bottom-18 right-3 z-10 flex flex-col items-center space-y-2">
+                <div className="absolute bottom-16 lg:bottom-20 right-3 z-10 flex flex-col items-center space-y-2">
                   <button
                     onClick={togglePlay}
                     className="w-10 h-10 lg:w-12 lg:h-12 flex items-center justify-center rounded-full bg-primary-50 hover:bg-primary-100 transition cursor-pointer shadow-md"
@@ -160,25 +185,20 @@ export default function BookReader({
                 </div>
               )}
 
-              {/* transparent video overlay */}
+              {/* Video centrado en el piso de la imagen - SIN FONDO NEGRO */}
               {showVideo && (
-                <div className="absolute inset-0 flex items-center justify-center z-20 bg-black bg-opacity-50">
-                  <div className={`${isExpanded?'w-4/5 h-4/5':'w-1/2 h-1/2'} relative transition-all duration-300`}>
-                    <video
-                      ref={videoRef}
-                      playsInline muted
-                      className="w-full h-full rounded-lg object-cover shadow-xl"
-                      onEnded={()=>setIsPlaying(false)}
-                    >
-                      <source src={page.videoWebmUrl} type="video/webm"/>
-                      <source src={page.videoMp4Url } type="video/mp4" />
-                      Your browser no support embedded videos.
-                    </video>
-                    <button
-                      onClick={()=>setShowVideo(false)}
-                      className="absolute top-2 right-2 w-8 h-8 flex items-center justify-center text-white text-xl bg-black bg-opacity-50 rounded-full hover:bg-opacity-70 transition"
-                    >✕</button>
-                  </div>
+                <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-20">
+                  <video
+                    ref={videoRef}
+                    playsInline muted
+                    className={`${isExpanded ? 'h-[450px]' : 'h-[300px]'} rounded-lg shadow-xl object-cover transition-all duration-300`}
+                    onEnded={handleVideoEnd}
+                    poster=""
+                  >
+                    <source src={page.videoWebmUrl} type="video/webm"/>
+                    <source src={page.videoMp4Url } type="video/mp4" />
+                    Your browser no support embedded videos.
+                  </video>
                 </div>
               )}
             </>
