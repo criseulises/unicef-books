@@ -15,9 +15,9 @@ export default function ReadingPage() {
       text: "El pollito pito\nNosotros somos en el parque\nTomando todo",
       textPosition: { top: "10%", left: "5%" },
       textBgColor: "#647411",
-      videoWebmUrl: "/videos/pollito-senas-3.webm",
-      videoMp4Url: "/videos/pollito-senas-3.mp4",
-      audioUrl: "/audios/PollitoPito_Pagina3.wav", // ✅ Este sí existe
+      videoWebmUrl: "/videos/pollito-senas-2.webm",
+      videoMp4Url: "/videos/pollito-senas-2.mp4",
+      audioUrl: "/audios/PollitoPito_Pagina3.wav", // ✅ Usar el que existe temporalmente
     },
     {
       id: 2,
@@ -25,9 +25,9 @@ export default function ReadingPage() {
       text: "Segunda página del pollito",
       textPosition: { top: "15%", left: "10%" },
       textBgColor: "#647411",
-      videoWebmUrl: "/videos/pollito-senas-3.webm",
-      videoMp4Url: "/videos/pollito-senas-3.mp4",
-      audioUrl: "/audios/PollitoPito_Pagina3.wav", // ✅ Este sí existe
+      videoWebmUrl: "/videos/pollito-senas-2.webm",
+      videoMp4Url: "/videos/pollito-senas-2.mp4",
+      audioUrl: "/audios/PollitoPito_Pagina3.wav", // ✅ Usar el que existe temporalmente
     },
 
     // ... más páginas con sus respectivos audios
@@ -116,6 +116,7 @@ export default function ReadingPage() {
 
   return (
     <div className="h-screen flex flex-col bg-background">
+      {/* Header en la parte superior */}
       <BookHeader
         title="El Pollito Pito"
         contentsOpen={contentsOpen}
@@ -124,12 +125,16 @@ export default function ReadingPage() {
         onToggleAccessibility={toggleAccessibility}
       />
 
-      <BookReader 
-        pages={pages} 
-        currentPage={current}     // ✅ Pasar página actual
-        onChangePage={handlePageChange} 
-      />
+      {/* Contenido principal que ocupa el espacio restante */}
+      <div className="flex-1 min-h-0">
+        <BookReader 
+          pages={pages} 
+          currentPage={current}
+          onChangePage={handlePageChange} 
+        />
+      </div>
 
+      {/* Footer en la parte inferior */}
       <BookFooter
         current={current + 1}
         total={pages.length}
