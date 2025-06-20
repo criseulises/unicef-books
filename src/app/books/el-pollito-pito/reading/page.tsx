@@ -142,6 +142,7 @@ export default function ReadingPage() {
         audioRef={audioRef}
         audioSrc={pages[current]?.audioUrl || ""}
         narrationOn={narrationOn}
+        audioSpeed={audioSpeed} // ✅ Pasar velocidad del audio
         onToggleNarration={toggleNarration}
         onSeekPage={handlePageChange}
       />

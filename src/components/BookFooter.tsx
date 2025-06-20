@@ -13,6 +13,7 @@ interface BookFooterProps {
   audioRef: React.RefObject<HTMLAudioElement | null>  // ✅ Permitir null
   audioSrc: string
   narrationOn: boolean
+  audioSpeed: number // ✅ Nueva prop para velocidad
   onToggleNarration: () => void
   onSeekPage?: (idx: number) => void
 }
@@ -23,9 +24,20 @@ export default function BookFooter({
   audioRef,
   audioSrc,
   narrationOn,
+  audioSpeed, // ✅ Recibir velocidad
   onToggleNarration,
 }: BookFooterProps) {
   const skipSeconds = 5
+
+  // ✅ Efecto para aplicar la velocidad del audio
+  useEffect(() => {
+    const audio = audioRef.current
+    if (!audio) return
+    
+    // Aplicar la velocidad de reproducción
+    audio.playbackRate = audioSpeed
+    console.log(`Velocidad de audio ajustada a: ${audioSpeed}x`)
+  }, [audioSpeed, audioRef])
 
   // ✅ Efecto para manejar cuando el audio termina
   useEffect(() => {
@@ -39,9 +51,19 @@ export default function BookFooter({
       console.log("Audio terminó - narración sigue activa para próxima página")
     }
     
+    const onLoadedData = () => {
+      // ✅ Aplicar velocidad cuando se carga nuevo audio
+      audio.playbackRate = audioSpeed
+    }
+    
     audio.addEventListener('ended', onEnded)
-    return () => audio.removeEventListener('ended', onEnded)
-  }, [audioRef])
+    audio.addEventListener('loadeddata', onLoadedData)
+    
+    return () => {
+      audio.removeEventListener('ended', onEnded)
+      audio.removeEventListener('loadeddata', onLoadedData)
+    }
+  }, [audioRef, audioSpeed])
 
   // ✅ Usar la función del padre en lugar de una local
   const togglePlay = () => {
@@ -93,6 +115,13 @@ export default function BookFooter({
           >
             <SkipForwardIcon className="w-6 h-6" />
           </button>
+        </div>
+
+        {/* Indicador de velocidad */}
+        <div className="flex-shrink-0">
+          <span className="text-xs text-primary-700 font-medium bg-primary-50 px-2 py-1 rounded">
+            {audioSpeed.toFixed(1)}×
+          </span>
         </div>
 
         {/* Barra de progreso con texto posicionado */}
