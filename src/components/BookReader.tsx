@@ -128,7 +128,7 @@ export default function BookReader({
               }}
               className="absolute bottom-4 right-4 z-10 w-12 h-12 flex items-center justify-center rounded-full bg-primary-50 hover:bg-primary-100 transition cursor-pointer"
             >
-              <SignLanguageIcon className="w-6 h-6 text-primary-600"/>
+              <SignLanguageIcon className=" text-primary-600"/>
             </button>
 
             {/* two extra buttons pop up above */}
@@ -138,13 +138,13 @@ export default function BookReader({
                   onClick={togglePlay}
                   className="w-12 h-12 flex items-center justify-center rounded-full bg-primary-50 hover:bg-primary-100 transition cursor-pointer"
                 >
-                  <PlayCircle className={`w-6 h-6 text-primary-600 ${isPlaying?'rotate-90':''}`}/>
+                  <PlayCircle className={` text-primary-600 ${isPlaying?'rotate-90':''}`}/>
                 </button>
                 <button
                   onClick={()=>setIsExpanded(e=>!e)}
                   className="w-12 h-12 flex items-center justify-center rounded-full bg-primary-50 hover:bg-primary-100 transition cursor-pointer"
                 >
-                  <ExpandContent className={`w-6 h-6 text-primary-600 ${isExpanded?'rotate-180':''}`}/>
+                  <ExpandContent className={` text-primary-600 ${isExpanded?'rotate-180':''}`}/>
                 </button>
               </div>
             )}
