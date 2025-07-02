@@ -29,14 +29,18 @@ interface BookReaderProps {
   pages: BookPage[]
   currentPage: number
   onChangePage: (idx: number) => void
-  textSize?: number // ✅ Nueva prop para el tamaño del texto
+  textSize?: number
+  imageScale?: number
+  isDefaultView?: boolean
 }
 
 export default function BookReader({
   pages,
   currentPage,
   onChangePage,
-  textSize = 16, // ✅ Valor por defecto
+  textSize = 32, // ✅ Cambió de 16 a 32px por defecto
+  imageScale = 1,
+  isDefaultView = true,
 }: BookReaderProps) {
   const [showVideo, setShowVideo] = useState(false)
   const [showControls, setShowControls] = useState(false)
@@ -47,23 +51,36 @@ export default function BookReader({
   const last = pages.length - 1
   const page = pages[currentPage]
 
-  // Auto-play cuando se abre el video O cuando cambia de página y el video está activo
+  // 🔥 EFECTO MEJORADO: Cambiar video automáticamente al cambiar página
   useEffect(() => {
-    if (showVideo && videoRef.current && page.videoWebmUrl && page.videoMp4Url) {
-      videoRef.current.currentTime = 0
+    const video = videoRef.current;
+    if (!video) return;
+
+    // Si el video está visible, cargar el nuevo video
+    if (showVideo && (page.videoWebmUrl || page.videoMp4Url)) {
+      // Pausar video actual
+      video.pause();
+      
+      // Cargar nuevo video
+      video.load();
+      
+      // Resetear tiempo
+      video.currentTime = 0;
+      
+      // Si estaba reproduciendo, reproducir el nuevo video
       if (isPlaying) {
-        videoRef.current.play()
+        const playPromise = video.play();
+        if (playPromise !== undefined) {
+          playPromise.catch((error) => {
+            console.log("Error auto-play video:", error);
+          });
+        }
       }
     }
-  }, [showVideo, currentPage]) // Agregamos currentPage como dependencia
-
-  // NO limpiar video automáticamente cuando cambia de página
-  // Solo limpiar si el usuario lo hace manualmente
+  }, [currentPage, page.videoWebmUrl, page.videoMp4Url, showVideo, isPlaying]);
 
   const go = (idx: number) => {
     onChangePage(idx)
-    // NO resetear showVideo, showControls, ni isPlaying
-    // Se mantienen activos entre páginas
   }
 
   const togglePlay = () => {
@@ -71,24 +88,65 @@ export default function BookReader({
     if (!v) return
     
     if (isPlaying) {
-      // Si está reproduciendo, pausar
       v.pause()
       setIsPlaying(false)
     } else {
-      // Si está pausado o terminado, reproducir desde el inicio
       v.currentTime = 0
-      v.play()
-      setIsPlaying(true)
+      const playPromise = v.play()
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => {
+            setIsPlaying(true)
+          })
+          .catch((error) => {
+            console.log("Error play video:", error)
+            setIsPlaying(false)
+          })
+      }
     }
   }
 
   const handleVideoEnd = () => {
-    // Cuando el video termina, volver al inicio y marcar como detenido
     if (videoRef.current) {
       videoRef.current.currentTime = 0
     }
     setIsPlaying(false)
   }
+
+  // 🔥 FUNCIÓN MEJORADA: Activar video con auto-play
+  const activateVideo = () => {
+    setShowVideo(true)
+    setShowControls(true)
+    setIsPlaying(true)
+    
+    // Dar tiempo para que el video se cargue y luego reproducir
+    setTimeout(() => {
+      const video = videoRef.current;
+      if (video) {
+        video.currentTime = 0;
+        const playPromise = video.play();
+        if (playPromise !== undefined) {
+          playPromise.catch((error) => {
+            console.log("Error activating video:", error);
+          });
+        }
+      }
+    }, 100);
+  }
+
+  // 🔥 FUNCIÓN PARA DESACTIVAR VIDEO
+  const deactivateVideo = () => {
+    const video = videoRef.current;
+    if (video) {
+      video.pause();
+      video.currentTime = 0;
+    }
+    setShowVideo(false);
+    setShowControls(false);
+    setIsPlaying(false);
+  }
+
+  const hasVideo = page.videoWebmUrl || page.videoMp4Url
 
   return (
     <div className="h-full w-full flex items-center justify-center bg-background p-4 relative">
@@ -106,110 +164,247 @@ export default function BookReader({
         <ChevronLeftIcon className="w-8 h-8 lg:w-10 lg:h-10 mx-2 lg:mx-4" />
       </button>
 
-      {/* Main image container - ocupa todo el espacio disponible */}
-      <div className="relative flex-1 h-full mx-4 flex items-center justify-center">
-        <div className="relative w-full h-full rounded-xl overflow-hidden border-4 border-[#647411] shadow-lg">
-          <Image
-            src={page.imageUrl}
-            alt={`Página ${currentPage+1}`}
-            width={1500}
-            height={754}
-            className="w-full h-full object-cover"
-            priority
-          />
+      {/* 🔥 MODO DEFAULT vs MODO NAVEGACIÓN */}
+      <div className="relative flex-1 h-full mx-4">
+        
+        {isDefaultView ? (
+          <div className="w-full h-full flex items-center justify-center">
+            <div 
+              className="relative rounded-xl overflow-hidden border-4 border-[#647411] shadow-lg"
+              style={{
+                width: 'min(100%, 1200px)',
+                height: 'min(100%, 600px)',
+                aspectRatio: '1500/754',
+              }}
+            >
+              <Image
+                src={page.imageUrl}
+                alt={`Página ${currentPage+1}`}
+                fill
+                className="object-cover"
+                priority
+              />
 
-          {/* Floating text */}
-          <div
-            className="absolute"
-            style={{
-              top:    page.textPosition?.top    ?? '10%',
-              left:   page.textPosition?.left   ?? '5%',
-              right:  page.textPosition?.right  ?? '5%',
-              bottom: page.textPosition?.bottom ?? 'auto',
-            }}
-          >
-            <div className="space-y-2">
-              {page.text.split('\n').map((line,i)=>
-                <span
-                  key={i}
-                  className="font-quicksand text-white font-semibold inline-block px-2 py-1"
-                  style={{
-                    backgroundColor: page.textBgColor ?? 'rgba(0,0,0,0.5)',
-                    boxDecorationBreak: 'clone',
-                    WebkitBoxDecorationBreak: 'clone',
-                    fontSize: `${textSize}px`, // ✅ Aplicar tamaño dinámico
-                    lineHeight: '1.4', // ✅ Mantener buena legibilidad
-                  }}
-                >
-                  {line}
-                </span>
+              {/* 🔥 FLOATING TEXT MEJORADO - MODO DEFAULT */}
+              <div
+                className="absolute"
+                style={{
+                  top:    page.textPosition?.top    ?? '10%',
+                  left:   page.textPosition?.left   ?? '5%',
+                  right:  page.textPosition?.right  ?? '5%',
+                  bottom: page.textPosition?.bottom ?? 'auto',
+                }}
+              >
+                <div className="flex flex-col space-y-2">
+                  {page.text.split('\n').map((line, i) => (
+                    <div
+                      key={i}
+                      className="font-quicksand text-white font-semibold px-2 py-1"
+                      style={{
+                        backgroundColor: page.textBgColor ?? 'rgba(0,0,0,0.5)',
+                        fontSize: `${textSize}px`,
+                        lineHeight: '1.4',
+                        borderRadius: '4px',
+                        display: 'inline-block',
+                        width: 'fit-content',
+                      }}
+                    >
+                      {line}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Video controls EN MODO DEFAULT */}
+              {hasVideo && (
+                <>
+                  <button
+                    onClick={() => {
+                      if (showVideo) {
+                        deactivateVideo();
+                      } else {
+                        activateVideo();
+                      }
+                    }}
+                    className="absolute bottom-3 right-3 z-10 w-10 h-10 lg:w-12 lg:h-12 flex items-center justify-center rounded-full bg-primary-50 hover:bg-primary-100 transition cursor-pointer shadow-md"
+                  >
+                    <SignLanguageIcon className="text-primary-600"/>
+                  </button>
+
+                  {showControls && (
+                    <div className="absolute bottom-16 lg:bottom-20 right-3 z-10 flex flex-col items-center space-y-2">
+                      <button
+                        onClick={togglePlay}
+                        className="w-10 h-10 lg:w-12 lg:h-12 flex items-center justify-center rounded-full bg-primary-50 hover:bg-primary-100 transition cursor-pointer shadow-md"
+                      >
+                        <PlayCircle className={`text-primary-600 ${isPlaying?'rotate-90':''}`}/>
+                      </button>
+                      <button
+                        onClick={()=>setIsExpanded(e=>!e)}
+                        className="w-10 h-10 lg:w-12 lg:h-12 flex items-center justify-center rounded-full bg-primary-50 hover:bg-primary-100 transition cursor-pointer shadow-md"
+                      >
+                        <ExpandContent className={`text-primary-600 ${isExpanded?'rotate-180':''}`}/>
+                      </button>
+                    </div>
+                  )}
+
+                  {/* 🔥 VIDEO MODO DEFAULT */}
+                  {showVideo && (
+                    <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-20">
+                      <video
+                        key={`video-${currentPage}-${page.id}`}
+                        ref={videoRef}
+                        playsInline muted
+                        className={`${isExpanded ? 'h-[400px]' : 'h-[320px]'} rounded-lg shadow-xl transition-all duration-300`}
+                        style={{
+                          width: 'auto',
+                          backgroundColor: 'transparent',
+                          objectFit: 'contain',
+                          objectPosition: 'center',
+                          border: 'none',
+                          outline: 'none',
+                        }}
+                        onEnded={handleVideoEnd}
+                        poster=""
+                      >
+                        {page.videoWebmUrl && (
+                          <source src={page.videoWebmUrl} type="video/webm"/>
+                        )}
+                        {page.videoMp4Url && (
+                          <source src={page.videoMp4Url} type="video/mp4" />
+                        )}
+                        Tu navegador no soporta videos.
+                      </video>
+                    </div>
+                  )}
+                </>
               )}
             </div>
           </div>
-
-          {/* —— SIGN LANGUAGE BUTTON + SUB-CONTROLS —— */}
-          {page.videoWebmUrl && page.videoMp4Url && (
-            <>
-              <button
-                onClick={() => {
-                  if (showVideo) {
-                    // Si el video está abierto, cerrarlo completamente
-                    setShowVideo(false)
-                    setShowControls(false)
-                    setIsPlaying(false)
-                    if (videoRef.current) {
-                      videoRef.current.pause()
-                      videoRef.current.currentTime = 0
-                    }
-                  } else {
-                    // Si el video está cerrado, abrirlo y empezar a reproducir
-                    setShowVideo(true)
-                    setShowControls(true)
-                    setIsPlaying(true) // Automáticamente en play
-                  }
+        ) : (
+          <div className="w-full h-full overflow-auto bg-gray-100 rounded-lg">
+            <div 
+              className="relative flex items-center justify-center p-4"
+              style={{
+                minWidth: '100%',
+                minHeight: '100%',
+              }}
+            >
+              <div 
+                className="relative rounded-xl overflow-hidden border-4 border-[#647411] shadow-lg"
+                style={{
+                  width: `${1200 * imageScale}px`,
+                  height: `${600 * imageScale}px`,
+                  aspectRatio: '1500/754',
+                  transition: 'all 0.3s ease-out',
                 }}
-                className="absolute bottom-3 right-3 z-10 w-10 h-10 lg:w-12 lg:h-12 flex items-center justify-center rounded-full bg-primary-50 hover:bg-primary-100 transition cursor-pointer shadow-md"
               >
-                <SignLanguageIcon className="text-primary-600"/>
-              </button>
+                <Image
+                  src={page.imageUrl}
+                  alt={`Página ${currentPage+1}`}
+                  fill
+                  className="object-cover"
+                  priority
+                />
 
-              {/* Botones de control arriba del botón de sign language */}
-              {showControls && (
-                <div className="absolute bottom-16 lg:bottom-20 right-3 z-10 flex flex-col items-center space-y-2">
-                  <button
-                    onClick={togglePlay}
-                    className="w-10 h-10 lg:w-12 lg:h-12 flex items-center justify-center rounded-full bg-primary-50 hover:bg-primary-100 transition cursor-pointer shadow-md"
-                  >
-                    <PlayCircle className={`text-primary-600 ${isPlaying?'rotate-90':''}`}/>
-                  </button>
-                  <button
-                    onClick={()=>setIsExpanded(e=>!e)}
-                    className="w-10 h-10 lg:w-12 lg:h-12 flex items-center justify-center rounded-full bg-primary-50 hover:bg-primary-100 transition cursor-pointer shadow-md"
-                  >
-                    <ExpandContent className={`text-primary-600 ${isExpanded?'rotate-180':''}`}/>
-                  </button>
+                {/* 🔥 FLOATING TEXT MEJORADO - MODO NAVEGACIÓN */}
+                <div
+                  className="absolute"
+                  style={{
+                    top:    page.textPosition?.top    ?? '10%',
+                    left:   page.textPosition?.left   ?? '5%',
+                    right:  page.textPosition?.right  ?? '5%',
+                    bottom: page.textPosition?.bottom ?? 'auto',
+                  }}
+                >
+                  <div className="flex flex-col space-y-2">
+                    {page.text.split('\n').map((line, i) => (
+                      <div
+                        key={i}
+                        className="font-quicksand text-white font-semibold px-2 py-1"
+                        style={{
+                          backgroundColor: page.textBgColor ?? 'rgba(0,0,0,0.5)',
+                          fontSize: `${textSize}px`,
+                          lineHeight: '1.4',
+                          borderRadius: '4px',
+                          display: 'inline-block',
+                          width: 'fit-content',
+                        }}
+                      >
+                        {line}
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              )}
 
-              {/* Video centrado en el piso de la imagen - SIN FONDO NEGRO */}
-              {showVideo && (
-                <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-20">
-                  <video
-                    ref={videoRef}
-                    playsInline muted
-                    className={`${isExpanded ? 'h-[450px]' : 'h-[300px]'} rounded-lg shadow-xl object-cover transition-all duration-300`}
-                    onEnded={handleVideoEnd}
-                    poster=""
-                  >
-                    <source src={page.videoWebmUrl} type="video/webm"/>
-                    <source src={page.videoMp4Url } type="video/mp4" />
-                    Your browser no support embedded videos.
-                  </video>
-                </div>
-              )}
-            </>
-          )}
-        </div>
+                {/* Video controls CON ZOOM */}
+                {hasVideo && (
+                  <>
+                    <button
+                      onClick={() => {
+                        if (showVideo) {
+                          deactivateVideo();
+                        } else {
+                          activateVideo();
+                        }
+                      }}
+                      className="absolute bottom-3 right-3 z-10 w-10 h-10 lg:w-12 lg:h-12 flex items-center justify-center rounded-full bg-primary-50 hover:bg-primary-100 transition cursor-pointer shadow-md"
+                    >
+                      <SignLanguageIcon className="text-primary-600"/>
+                    </button>
+
+                    {showControls && (
+                      <div className="absolute bottom-16 lg:bottom-20 right-3 z-10 flex flex-col items-center space-y-2">
+                        <button
+                          onClick={togglePlay}
+                          className="w-10 h-10 lg:w-12 lg:h-12 flex items-center justify-center rounded-full bg-primary-50 hover:bg-primary-100 transition cursor-pointer shadow-md"
+                        >
+                          <PlayCircle className={`text-primary-600 ${isPlaying?'rotate-90':''}`}/>
+                        </button>
+                        <button
+                          onClick={()=>setIsExpanded(e=>!e)}
+                          className="w-10 h-10 lg:w-12 lg:h-12 flex items-center justify-center rounded-full bg-primary-50 hover:bg-primary-100 transition cursor-pointer shadow-md"
+                        >
+                          <ExpandContent className={`text-primary-600 ${isExpanded?'rotate-180':''}`}/>
+                        </button>
+                      </div>
+                    )}
+
+                    {/* 🔥 VIDEO MODO NAVEGACIÓN */}
+                    {showVideo && (
+                      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-20">
+                        <video
+                          key={`video-nav-${currentPage}-${page.id}`}
+                          ref={videoRef}
+                          playsInline muted
+                          className={`${isExpanded ? 'h-[550px]' : 'h-[400px]'} rounded-lg shadow-xl transition-all duration-300`}
+                          style={{
+                            width: 'auto',
+                            backgroundColor: 'transparent',
+                            objectFit: 'contain',
+                            objectPosition: 'center',
+                            border: 'none',
+                            outline: 'none',
+                          }}
+                          onEnded={handleVideoEnd}
+                          poster=""
+                        >
+                          {page.videoWebmUrl && (
+                            <source src={page.videoWebmUrl} type="video/webm"/>
+                          )}
+                          {page.videoMp4Url && (
+                            <source src={page.videoMp4Url} type="video/mp4" />
+                          )}
+                          Tu navegador no soporta videos.
+                        </video>
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* → Next */}

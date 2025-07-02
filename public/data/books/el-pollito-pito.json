@@ -1,0 +1,124 @@
+{
+  "id": "el-pollito-pito",
+  "title": "El Pollito Pito",
+  "description": "Historia del pollito Pito en el parque",
+  "metadata": {
+    "author": "Autor del libro",
+    "illustrator": "Ilustrador",
+    "language": "es",
+    "category": "infantil",
+    "ageRange": "3-6"
+  },
+  "glossary": {
+    "title": "Glosario \"El Pollito Pito\"",
+    "terms": [
+      {
+        "id": 1,
+        "word": "Pollito",
+        "definition": "Cría pequeña del gallo y la gallina, de plumas suaves y amarillas.",
+        "pictogram": "/images/glossary/pollito.png",
+        "audioUrl": "/audios/glossary/pollito.wav",
+        "videoUrl": "/videos/glossary/pollito.mp4"
+      },
+      {
+        "id": 2,
+        "word": "Parque",
+        "definition": "Lugar público con árboles, plantas y espacios para jugar y caminar.",
+        "pictogram": "/images/glossary/parque.png",
+        "audioUrl": "/audios/glossary/parque.wav",
+        "videoUrl": "/videos/glossary/parque.mp4"
+      },
+      {
+        "id": 3,
+        "word": "Jugar",
+        "definition": "Divertirse y pasar tiempo haciendo actividades entretenidas.",
+        "pictogram": "/images/glossary/jugar.png",
+        "audioUrl": "/audios/glossary/jugar.wav",
+        "videoUrl": "/videos/glossary/jugar.mp4"
+      },
+      {
+        "id": 4,
+        "word": "Amigo",
+        "definition": "Persona o animal con quien se tiene una relación de cariño y confianza.",
+        "pictogram": "/images/glossary/amigo.png",
+        "audioUrl": "/audios/glossary/amigo.wav",
+        "videoUrl": "/videos/glossary/amigo.mp4"
+      },
+      {
+        "id": 5,
+        "word": "Feliz",
+        "definition": "Sentirse contento, alegre y con ganas de sonreír.",
+        "pictogram": "/images/glossary/feliz.png",
+        "audioUrl": "/audios/glossary/feliz.wav",
+        "videoUrl": "/videos/glossary/feliz.mp4"
+      }
+    ]
+  },
+  "pages": [
+    {
+      "id": 1,
+      "imageUrl": "/images/pollito/pagina1.jpg",
+      "text": "El pollito pito\nNosotros somos en el parque\nTomando todo",
+      "textPosition": { 
+        "top": "10%", 
+        "left": "5%" 
+      },
+      "textBgColor": "#647411",
+      "videoWebmUrl": "/videos/pollito-senas-1.webm",
+      "videoMp4Url": "/videos/pollito-senas-1.mp4",
+      "audioUrl": "/audios/PollitoPito_Pagina1.wav"
+    },
+    {
+      "id": 2,
+      "imageUrl": "/images/pollito/pagina2.jpg",
+      "text": "Segunda página del pollito",
+      "textPosition": { 
+        "top": "15%", 
+        "left": "10%" 
+      },
+      "textBgColor": "#647411",
+      "videoWebmUrl": "/videos/pollito-senas-2.webm",
+      "videoMp4Url": "/videos/pollito-senas-2.mp4",
+      "audioUrl": "/audios/PollitoPito_Pagina2.wav"
+    },
+    {
+      "id": 3,
+      "imageUrl": "/images/pollito/pagina3.jpg",
+      "text": "Tercera página del pollito",
+      "textPosition": { 
+        "top": "20%", 
+        "left": "8%" 
+      },
+      "textBgColor": "#647411",
+      "videoWebmUrl": "/videos/pollito-senas-3.webm",
+      "videoMp4Url": "/videos/pollito-senas-3.mp4",
+      "audioUrl": "/audios/PollitoPito_Pagina3.wav"
+    },
+    {
+      "id": 4,
+      "imageUrl": "/images/pollito/pagina4.jpg",
+      "text": "Cuarta página del pollito",
+      "textPosition": { 
+        "top": "12%", 
+        "left": "7%" 
+      },
+      "textBgColor": "#647411",
+      "videoWebmUrl": "/videos/pollito-senas-4.webm",
+      "videoMp4Url": "/videos/pollito-senas-4.mp4",
+      "audioUrl": "/audios/PollitoPito_Pagina4.wav"
+    },
+    {
+      "id": 5,
+      "imageUrl": "/images/pollito/pagina5.jpg",
+      "text": "Quinta página del pollito",
+      "textPosition": { 
+        "top": "18%", 
+        "left": "6%" 
+      },
+      "textBgColor": "#647411",
+      "videoWebmUrl": "/videos/pollito-senas-5.webm",
+      "videoMp4Url": "/videos/pollito-senas-5.mp4",
+      "audioUrl": "/audios/PollitoPito_Pagina5.wav"
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 // src/components/AccessibilitySidebar.tsx
 "use client";
 import React from "react";
-import { Volume2Icon, ImageIcon } from "lucide-react";
+import { Volume2Icon, ImageIcon, RotateCcwIcon } from "lucide-react";
 
 interface Props {
   contrast: number; // 0..4
@@ -9,11 +9,13 @@ interface Props {
   imageScale: number;
   audioSpeed: number;
   narrationOn: boolean;
+  isDefaultView: boolean;
   onContrastChange: (level: number) => void;
   onTextSizeChange: (n: number) => void;
   onImageScaleChange: (s: number) => void;
   onAudioSpeedChange: (s: number) => void;
   onToggleNarration: () => void;
+  onResetToDefault: () => void;
   onClose: () => void;
 }
 
@@ -31,11 +33,13 @@ export default function AccessibilitySidebar({
   imageScale,
   audioSpeed,
   narrationOn,
+  isDefaultView,
   onContrastChange,
   onTextSizeChange,
   onImageScaleChange,
   onAudioSpeedChange,
   onToggleNarration,
+  onResetToDefault,
   onClose,
 }: Props) {
   return (
@@ -52,9 +56,25 @@ export default function AccessibilitySidebar({
         <div className="h-16 mb-4"></div>
         
         {/* Título */}
-        <h2 className="text-xl  text-blue-600 mb-6">
+        <h2 className="text-xl text-blue-600 mb-6">
           Opciones de Lectura
         </h2>
+
+        {/* 🔥 INDICADOR DE MODO ACTUAL */}
+        <div className="mb-6 p-3 rounded-lg bg-blue-50 border border-blue-200">
+          <div className="flex items-center justify-between">
+            <span className="text-blue-600 font-medium text-sm">
+              Modo actual:
+            </span>
+            <span className={`font-medium text-sm px-2 py-1 rounded ${
+              isDefaultView 
+                ? 'bg-green-100 text-green-700' 
+                : 'bg-orange-100 text-orange-700'
+            }`}>
+              {isDefaultView ? 'Vista Fija' : 'Navegación'}
+            </span>
+          </div>
+        </div>
 
         {/* Contraste */}
         <section className="mb-6">
@@ -76,7 +96,7 @@ export default function AccessibilitySidebar({
           </div>
         </section>
 
-        {/* Tamaño de Texto */}
+        {/* 🔥 TAMAÑO DE TEXTO ACTUALIZADO */}
         <section className="mb-6">
           <div className="flex items-center justify-between mb-3">
             <label className="text-blue-600 font-medium">Tamaño del Texto</label>
@@ -84,17 +104,17 @@ export default function AccessibilitySidebar({
           </div>
           
           <div className="flex items-center mb-3">
-            <span className="text-blue-600 text-lg  mr-3 min-w-[2rem]">Aa</span>
+            <span className="text-blue-600 text-lg mr-3 min-w-[2rem]">Aa</span>
             <div className="flex-1 relative">
               <input
                 type="range"
-                min={12}
-                max={24}
+                min={24} // ✅ Mínimo aumentado de 12 a 24
+                max={48} // ✅ Máximo aumentado de 24 a 48
                 value={textSize}
                 onChange={(e) => onTextSizeChange(+e.target.value)}
                 className="w-full h-2 bg-gray-200 rounded-full appearance-none slider"
                 style={{
-                  background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${((textSize - 12) / (24 - 12)) * 100}%, #e5e7eb ${((textSize - 12) / (24 - 12)) * 100}%, #e5e7eb 100%)`
+                  background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${((textSize - 24) / (48 - 24)) * 100}%, #e5e7eb ${((textSize - 24) / (48 - 24)) * 100}%, #e5e7eb 100%)`
                 }}
               />
             </div>
@@ -102,13 +122,13 @@ export default function AccessibilitySidebar({
 
           <div className="flex justify-between">
             <button
-              onClick={() => onTextSizeChange(Math.max(12, textSize - 1))}
+              onClick={() => onTextSizeChange(Math.max(24, textSize - 2))} // ✅ Mínimo 24, decrementos de 2
               className="px-4 py-2 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center text-lg font-medium"
             >
               −
             </button>
             <button
-              onClick={() => onTextSizeChange(Math.min(24, textSize + 1))}
+              onClick={() => onTextSizeChange(Math.min(48, textSize + 2))} // ✅ Máximo 48, incrementos de 2
               className="px-4 py-2 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center text-lg font-medium"
             >
               +
@@ -157,11 +177,26 @@ export default function AccessibilitySidebar({
           </div>
         </section>
 
-        {/* Tamaño de Imagen */}
+        {/* 🔥 TAMAÑO DE IMAGEN CON BOTÓN DEFAULT */}
         <section className="mb-6">
           <div className="flex items-center justify-between mb-3">
             <label className="text-blue-600 font-medium">Tamaño de la Imagen</label>
-            <span className="text-blue-600 font-medium text-sm">{imageScale.toFixed(1)}×</span>
+            <div className="flex items-center space-x-2">
+              <span className="text-blue-600 font-medium text-sm">{imageScale.toFixed(1)}×</span>
+              {/* 🔥 BOTÓN DEFAULT */}
+              <button
+                onClick={onResetToDefault}
+                className={`flex items-center space-x-1 px-2 py-1 rounded text-xs font-medium transition ${
+                  isDefaultView 
+                    ? 'bg-green-100 text-green-700 border border-green-300' 
+                    : 'bg-blue-100 text-blue-700 border border-blue-300 hover:bg-blue-200'
+                }`}
+                disabled={isDefaultView}
+              >
+                <RotateCcwIcon className="w-3 h-3" />
+                <span>Default</span>
+              </button>
+            </div>
           </div>
           
           <div className="flex items-center mb-3">
@@ -195,6 +230,15 @@ export default function AccessibilitySidebar({
             >
               +
             </button>
+          </div>
+
+          {/* 🔥 DESCRIPCIÓN DEL MODO */}
+          <div className="mt-3 p-2 rounded bg-gray-50 text-xs text-gray-600">
+            {isDefaultView ? (
+              <span>📌 Vista fija centrada. Cambia el zoom para entrar en modo navegación.</span>
+            ) : (
+              <span>🔍 Modo navegación activo. Puedes hacer scroll para explorar la imagen ampliada.</span>
+            )}
           </div>
         </section>
 

@@ -84,7 +84,6 @@ export default function BookFooter({
 
   return (
     <footer className="px-6 pb-10">
-      {/* ✅ El audio se maneja en el componente padre */}
       <audio ref={audioRef} src={audioSrc} preload="metadata" />
 
       <div className="max-w-6xl mx-auto flex items-center space-x-6">
@@ -117,14 +116,12 @@ export default function BookFooter({
           </button>
         </div>
 
-        {/* Indicador de velocidad */}
         <div className="flex-shrink-0">
           <span className="text-xs text-primary-700 font-medium bg-primary-50 px-2 py-1 rounded">
             {audioSpeed.toFixed(1)}×
           </span>
         </div>
 
-        {/* Barra de progreso con texto posicionado */}
         <div className="relative flex-1">
           <div className="relative">
             <progress
@@ -145,7 +142,6 @@ export default function BookFooter({
               }}
             />
             
-            {/* Círculo indicador en la punta del progreso */}
             <div
               className="absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-primary-700 rounded-full "
               style={{
@@ -154,7 +150,6 @@ export default function BookFooter({
             />
           </div>
           
-          {/* Texto posicionado en la esquina inferior derecha de la barra */}
           <div className="absolute -bottom-6 right-0">
             <span className="text-xs text-primary-700 font-medium">
               pag {current}/{total}
