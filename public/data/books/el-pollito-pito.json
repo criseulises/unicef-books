@@ -12,8 +12,8 @@
   "pages": [
     {
       "id": 1,
-      "imageUrl": "/images/pages/Portada.jpg",
-      "text": "El pollito pito\nNosotros somos en el parque\nTomando todo",
+      "imageUrl": "/images/pages/CUENTOSMINERD_POLLITO.jpg",
+      "text": "Un día, Pollito Pito fue al bosque y ¡pum!, le cayó\n una ciruela en la cabeza.",
       "textPosition": { 
         "top": "10%", 
         "left": "5%" 
@@ -26,7 +26,7 @@
     {
       "id": 2,
       "imageUrl": "/images/pages/CUENTOSMINERD_POLLITO2.jpg",
-      "text": "Segunda página del pollito",
+      "text": "Dijo muy asustado: —¡El cielo se va a caer y el Rey\nlo debe saber! Voy de prisa a darle la noticia.",
       "textPosition": { 
         "top": "15%", 
         "left": "10%" 
@@ -39,20 +39,20 @@
     {
       "id": 3,
       "imageUrl": "/images/pages/CUENTOSMINERD_POLLITO3.jpg",
-      "text": "Tercera página del pollito",
+      "text": "—Buen día, Pollito Pito. ¿Adónde vas tan tempranito?\n—¡El cielo se va a caer y el Rey lo debe saber! Voy de\nprisa a darle la noticia.\n—Pues yo voy también a decírselo al Rey.",
       "textPosition": { 
-        "top": "20%", 
-        "left": "8%" 
+        "top": "5%", 
+        "left": "1%" 
       },
       "textBgColor": "#647411",
       "videoWebmUrl": "/videos/pages/Pag3.webm",
       "videoMp4Url": "/videos/pages/Pag3.mp4",
-      "audioUrl": "/audios/pages/PollitoPito_Pagina3.wav"
+      "audioUrl": "/audios/pages/PollitoPito_Pagina4.wav"
     },
     {
       "id": 4,
       "imageUrl": "/images/pages/CUENTOSMINERD_POLLITO4.jpg",
-      "text": "Cuarta página del pollito",
+      "text": "Y allí fueron los dos: Gallina Fina y Pollito\nPito. Camina que camina\nencontraron a Gallo Malayo.",
       "textPosition": { 
         "top": "12%", 
         "left": "7%" 
@@ -60,20 +60,20 @@
       "textBgColor": "#647411",
       "videoWebmUrl": "/videos/pages/Pag4.webm",
       "videoMp4Url": "/videos/pages/Pag4.mp4",
-      "audioUrl": "/audios/pages/PollitoPito_Pagina4.wav"
+      "audioUrl": "/audios/pages/PollitoPito_Pagina5.wav"
     },
     {
       "id": 5,
       "imageUrl": "/images/pages/CUENTOSMINERD_POLLITO5.jpg",
-      "text": "Quinta página del pollito",
+      "text": "—Buen día, Gallina Fina y Pollito Pito. ¿Adónde van\ntan tempranito?\n—¡El cielo se va a caer y el Rey lo debe saber!\nVamos de prisa a darle la noticia.",
       "textPosition": { 
-        "top": "18%", 
-        "left": "6%" 
+        "top": "5%", 
+        "left": "1%" 
       },
       "textBgColor": "#647411",
       "videoWebmUrl": "/videos/pages/Pag5.webm",
-      "videoMp4Url": "/videos/pages/Pag5.mp4",
-      "audioUrl": "/audios/pages/PollitoPito_Pagina5.wav"
+      "videoMp4Url": "/videos/pages/Pag5.mp6",
+      "audioUrl": "/audios/pages/PollitoPito_Pagina6.wav"
     }
   ],
   "glossary": {
