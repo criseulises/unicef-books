@@ -3,6 +3,7 @@ import { useState, useRef, useEffect } from "react";
 import BookHeader from "components/BookHeader";
 import BookReader from "components/BookReader";
 import BookFooter from "components/BookFooter";
+import Glossary from "components/Glossary";
 import AccessibilitySidebar from "components/AccessibilitySidebar";
 import Sidebar from "components/Sidebar";
 import { useBookData } from "hooks/useBookData";
@@ -22,14 +23,14 @@ export default function ReadingPage() {
 
   // Estados de accesibilidad
   const [contrast, setContrast] = useState(0);
-  const [textSize, setTextSize] = useState(32); // ✅ Cambió de 16 a 32px por defecto
+  const [textSize, setTextSize] = useState(32);
   const [imageScale, setImageScale] = useState(1);
   const [audioSpeed, setAudioSpeed] = useState(1);
 
-  // 🔥 NUEVO: Estado para controlar el modo de vista
+  // 🔥 Estado para controlar el modo de vista
   const [isDefaultView, setIsDefaultView] = useState(true);
 
-  // 🔥 NUEVO: Detectar cuando imageScale cambia de 1 (default)
+  // 🔥 Detectar cuando imageScale cambia de 1 (default)
   useEffect(() => {
     if (imageScale === 1) {
       setIsDefaultView(true);
@@ -38,10 +39,16 @@ export default function ReadingPage() {
     }
   }, [imageScale]);
 
+  // ✅ LÓGICA CORREGIDA: Calcular total de páginas incluyendo glosario
+  const totalBookPages = bookData?.pages.length || 0;
+  const totalPagesWithGlossary = totalBookPages + 1; // +1 para el glosario
+  const isInGlossary = current === totalBookPages; // Si current === total de páginas del libro, mostrar glosario
+  const isInPages = current < totalBookPages; // Si current < total de páginas del libro, mostrar páginas
+
   // 2. Función para alternar la narración con manejo de errores
   const toggleNarration = () => {
     const audio = audioRef.current;
-    if (!audio || !bookData) return;
+    if (!audio || !bookData || isInGlossary) return; // ✅ No narrar en glosario
 
     if (narrationOn) {
       audio.pause();
@@ -58,23 +65,34 @@ export default function ReadingPage() {
     }
   };
 
-  // 3. Función para cambiar de página con auto-reproducción y manejo de errores
+  // 3. ✅ FUNCIÓN MEJORADA: Manejar cambio de página incluyendo glosario
   const handlePageChange = (pageIndex: number) => {
     if (!bookData) return;
     
-    setCurrent(pageIndex);
+    // ✅ Validar límites: 0 hasta totalPagesWithGlossary - 1
+    const clampedIndex = Math.max(0, Math.min(pageIndex, totalPagesWithGlossary - 1));
+    setCurrent(clampedIndex);
     
-    // Si la narración está activa, reproducir el audio de la nueva página
-    if (narrationOn) {
+    // ✅ Solo reproducir audio si estamos en páginas del libro (no en glosario)
+    if (narrationOn && clampedIndex < totalBookPages) {
       setTimeout(() => {
         const audio = audioRef.current;
-        if (audio && bookData.pages[pageIndex]?.audioUrl) {
+        if (audio && bookData.pages[clampedIndex]?.audioUrl) {
           audio.load(); // Recargar el nuevo src
           audio.play().catch((error) => {
             console.log("Audio no disponible para esta página:", error);
           });
         }
       }, 100);
+    }
+
+    // ✅ Pausar narración si entramos al glosario
+    if (clampedIndex === totalBookPages && narrationOn) {
+      const audio = audioRef.current;
+      if (audio) {
+        audio.pause();
+        setNarrationOn(false);
+      }
     }
   };
 
@@ -103,7 +121,13 @@ export default function ReadingPage() {
     setContentsOpen(false); // Cerrar sidebar después de seleccionar
   };
 
-  // 🔥 NUEVA: Función para resetear a vista default
+  // 🔥 ✅ NUEVA: Función para ir al glosario desde sidebar
+  const handleGoToGlossary = () => {
+    handlePageChange(totalBookPages); // Ir a la posición del glosario
+    setContentsOpen(false);
+  };
+
+  // 🔥 Función para resetear a vista default
   const handleResetToDefault = () => {
     setImageScale(1);
     setIsDefaultView(true);
@@ -143,55 +167,67 @@ export default function ReadingPage() {
         onToggleAccessibility={toggleAccessibility}
       />
 
-      {/* Contenido principal que ocupa el espacio restante */}
+      {/* ✅ CONTENIDO PRINCIPAL - CONDICIONAL MEJORADO */}
       <div className="flex-1 min-h-0">
-        <BookReader 
-          pages={bookData.pages} 
-          currentPage={current}
-          onChangePage={handlePageChange}
-          textSize={textSize}
-          imageScale={imageScale}
-          isDefaultView={isDefaultView} // ✅ Pasar el estado del modo
-        />
+        {isInPages ? (
+          // 📖 MOSTRAR PÁGINAS DEL LIBRO
+          <BookReader 
+            pages={bookData.pages} 
+            currentPage={current}
+            onChangePage={handlePageChange}
+            textSize={textSize}
+            imageScale={imageScale}
+            isDefaultView={isDefaultView}
+            totalPagesWithGlossary={totalPagesWithGlossary} // ✅ Pasar el total incluyendo glosario
+          />
+        ) : isInGlossary ? (
+          // 📚 MOSTRAR GLOSARIO
+          <Glossary 
+            glossary={bookData.glossary}
+            textSize={textSize}
+          />
+        ) : null}
       </div>
 
-      {/* Footer en la parte inferior */}
+      {/* ✅ FOOTER MEJORADO - SIEMPRE MOSTRAR PERO ADAPTAR FUNCIONALIDAD */}
       <BookFooter
         current={current + 1}
-        total={bookData.pages.length}
+        total={totalPagesWithGlossary} // ✅ Total incluyendo glosario
         audioRef={audioRef}
-        audioSrc={bookData.pages[current]?.audioUrl || ""}
-        narrationOn={narrationOn}
+        audioSrc={isInPages ? (bookData.pages[current]?.audioUrl || "") : ""} // ✅ Solo audio en páginas
+        narrationOn={narrationOn && isInPages} // ✅ Solo narración en páginas
         audioSpeed={audioSpeed}
         onToggleNarration={toggleNarration}
-        onSeekPage={handlePageChange}
+        onSeekPage={handlePageChange} // ✅ Ahora maneja páginas + glosario
       />
 
-      {/* Sidebar de Contenidos */}
+      {/* ✅ SIDEBAR DE CONTENIDOS MEJORADO - INCLUIR GLOSARIO */}
       {contentsOpen && (
         <Sidebar
           pages={bookData.pages}
           currentPage={current}
           onSelectPage={handleSelectPage}
+          onGoToGlossary={handleGoToGlossary} // ✅ Nueva prop para ir al glosario
+          isInGlossary={isInGlossary} // ✅ Nueva prop para indicar si estamos en glosario
           onClose={() => setContentsOpen(false)}
         />
       )}
 
-      {/* Sidebar de Accesibilidad */}
+      {/* ✅ SIDEBAR DE ACCESIBILIDAD - SIEMPRE DISPONIBLE */}
       {accessibilityOpen && (
         <AccessibilitySidebar
           contrast={contrast}
           textSize={textSize}
           imageScale={imageScale}
           audioSpeed={audioSpeed}
-          narrationOn={narrationOn}
-          isDefaultView={isDefaultView} // ✅ Pasar el estado del modo
+          narrationOn={narrationOn && isInPages} // ✅ Solo mostrar narración activa en páginas
+          isDefaultView={isDefaultView}
           onContrastChange={setContrast}
           onTextSizeChange={setTextSize}
           onImageScaleChange={setImageScale}
           onAudioSpeedChange={setAudioSpeed}
           onToggleNarration={toggleNarration}
-          onResetToDefault={handleResetToDefault} // ✅ Nueva función
+          onResetToDefault={handleResetToDefault}
           onClose={() => setAccessibilityOpen(false)}
         />
       )}

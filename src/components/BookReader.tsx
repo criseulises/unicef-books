@@ -32,15 +32,17 @@ interface BookReaderProps {
   textSize?: number
   imageScale?: number
   isDefaultView?: boolean
+  totalPagesWithGlossary?: number // ✅ Nueva prop para conocer el total incluyendo glosario
 }
 
 export default function BookReader({
   pages,
   currentPage,
   onChangePage,
-  textSize = 32, // ✅ Cambió de 16 a 32px por defecto
+  textSize = 32,
   imageScale = 1,
   isDefaultView = true,
+  totalPagesWithGlossary, // ✅ Nueva prop
 }: BookReaderProps) {
   const [showVideo, setShowVideo] = useState(false)
   const [showControls, setShowControls] = useState(false)
@@ -48,13 +50,15 @@ export default function BookReader({
   const [isExpanded, setIsExpanded] = useState(false)
   const videoRef = useRef<HTMLVideoElement>(null)
 
-  const last = pages.length - 1
+  // ✅ CÁLCULO CORREGIDO: Usar totalPagesWithGlossary si está disponible
+  const totalPages = totalPagesWithGlossary || pages.length
+  const lastPageIndex = totalPages - 1
   const page = pages[currentPage]
 
   // 🔥 EFECTO MEJORADO: Cambiar video automáticamente al cambiar página
   useEffect(() => {
     const video = videoRef.current;
-    if (!video) return;
+    if (!video || !page) return;
 
     // Si el video está visible, cargar el nuevo video
     if (showVideo && (page.videoWebmUrl || page.videoMp4Url)) {
@@ -77,7 +81,7 @@ export default function BookReader({
         }
       }
     }
-  }, [currentPage, page.videoWebmUrl, page.videoMp4Url, showVideo, isPlaying]);
+  }, [currentPage, page?.videoWebmUrl, page?.videoMp4Url, showVideo, isPlaying]);
 
   const go = (idx: number) => {
     onChangePage(idx)
@@ -146,7 +150,19 @@ export default function BookReader({
     setIsPlaying(false);
   }
 
-  const hasVideo = page.videoWebmUrl || page.videoMp4Url
+  // ✅ VERIFICACIÓN SEGURA: Solo verificar video si la página existe
+  const hasVideo = page && (page.videoWebmUrl || page.videoMp4Url)
+
+  // ✅ PROTECCIÓN: Si no hay página actual, no mostrar nada
+  if (!page) {
+    return (
+      <div className="h-full w-full flex items-center justify-center bg-background p-4">
+        <div className="text-center">
+          <p className="text-gray-500">Página no encontrada</p>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="h-full w-full flex items-center justify-center bg-background p-4 relative">
@@ -409,11 +425,11 @@ export default function BookReader({
 
       {/* → Next */}
       <button
-        onClick={() => currentPage<last && go(currentPage+1)}
-        disabled={currentPage===last}
+        onClick={() => currentPage < lastPageIndex && go(currentPage+1)}
+        disabled={currentPage === lastPageIndex}
         className={`
           p-2 transition flex-shrink-0 z-10
-          ${currentPage===last
+          ${currentPage === lastPageIndex
              ? 'opacity-50 cursor-not-allowed'
              : 'text-primary-600 hover:text-primary-700'}
         `}

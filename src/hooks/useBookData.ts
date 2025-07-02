@@ -9,9 +9,23 @@ export interface BookPage {
     left: string;
   };
   textBgColor: string;
-  videoWebmUrl: string;
-  videoMp4Url: string;
+  videoWebmUrl?: string;
+  videoMp4Url?: string;
   audioUrl: string;
+}
+
+export interface GlossaryTerm {
+  id: number;
+  word: string;
+  definition: string;
+  pictogram: string;
+  audioUrl: string;
+  videoUrl: string;
+}
+
+export interface GlossaryData {
+  title: string;
+  terms: GlossaryTerm[];
 }
 
 export interface BookData {
@@ -26,6 +40,7 @@ export interface BookData {
     ageRange: string;
   };
   pages: BookPage[];
+  glossary: GlossaryData; // ✅ Glosario incluido
 }
 
 export function useBookData(bookId: string) {

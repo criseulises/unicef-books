@@ -1,5 +1,5 @@
 'use client'
-import React, {  useEffect } from 'react'
+import React, { useEffect } from 'react'
 import {
   SkipBackIcon,
   PlayIcon,
@@ -10,10 +10,10 @@ import {
 interface BookFooterProps {
   current: number
   total: number
-  audioRef: React.RefObject<HTMLAudioElement | null>  // ✅ Permitir null
+  audioRef: React.RefObject<HTMLAudioElement | null>
   audioSrc: string
   narrationOn: boolean
-  audioSpeed: number // ✅ Nueva prop para velocidad
+  audioSpeed: number
   onToggleNarration: () => void
   onSeekPage?: (idx: number) => void
 }
@@ -24,30 +24,31 @@ export default function BookFooter({
   audioRef,
   audioSrc,
   narrationOn,
-  audioSpeed, // ✅ Recibir velocidad
+  audioSpeed,
   onToggleNarration,
+  onSeekPage,
 }: BookFooterProps) {
   const skipSeconds = 5
+
+  // ✅ Verificar si hay audio disponible
+  const hasAudio = audioSrc && audioSrc.trim() !== ''
 
   // ✅ Efecto para aplicar la velocidad del audio
   useEffect(() => {
     const audio = audioRef.current
-    if (!audio) return
+    if (!audio || !hasAudio) return
     
     // Aplicar la velocidad de reproducción
     audio.playbackRate = audioSpeed
     console.log(`Velocidad de audio ajustada a: ${audioSpeed}x`)
-  }, [audioSpeed, audioRef])
+  }, [audioSpeed, audioRef, hasAudio])
 
   // ✅ Efecto para manejar cuando el audio termina
   useEffect(() => {
     const audio = audioRef.current
-    if (!audio) return
+    if (!audio || !hasAudio) return
     
     const onEnded = () => {
-      // ✅ CAMBIO: No desactivar la narración cuando termine naturalmente
-      // La narración se mantiene activa para auto-reproducir la siguiente página
-      // Solo se desactiva cuando el usuario hace click en pause manualmente
       console.log("Audio terminó - narración sigue activa para próxima página")
     }
     
@@ -63,28 +64,46 @@ export default function BookFooter({
       audio.removeEventListener('ended', onEnded)
       audio.removeEventListener('loadeddata', onLoadedData)
     }
-  }, [audioRef, audioSpeed])
+  }, [audioRef, audioSpeed, hasAudio])
 
-  // ✅ Usar la función del padre en lugar de una local
   const togglePlay = () => {
-    onToggleNarration()
+    if (hasAudio) {
+      onToggleNarration()
+    }
   }
 
   const handleSkipForward = () => {
     const audio = audioRef.current
-    if (!audio) return
+    if (!audio || !hasAudio) return
     audio.currentTime = Math.min(audio.currentTime + skipSeconds, audio.duration || 0)
   }
 
   const handleSkipBack = () => {
     const audio = audioRef.current
-    if (!audio) return
+    if (!audio || !hasAudio) return
     audio.currentTime = Math.max(audio.currentTime - skipSeconds, 0)
+  }
+
+  // ✅ Función para manejar click en la barra de progreso
+  const handleProgressClick = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (!onSeekPage) return
+    
+    const rect = event.currentTarget.getBoundingClientRect()
+    const clickX = event.clientX - rect.left
+    const percentage = clickX / rect.width
+    const targetPage = Math.round(percentage * (total - 1))
+    
+    // Asegurar que esté dentro del rango válido
+    const clampedPage = Math.max(0, Math.min(targetPage, total - 1))
+    onSeekPage(clampedPage)
   }
 
   return (
     <footer className="px-6 pb-10">
-      <audio ref={audioRef} src={audioSrc} preload="metadata" />
+      {/* ✅ Solo renderizar audio si hay src válido */}
+      {hasAudio && (
+        <audio ref={audioRef} src={audioSrc} preload="metadata" />
+      )}
 
       <div className="max-w-6xl mx-auto flex items-center space-x-6">
         {/* Controles de audio */}
@@ -92,14 +111,25 @@ export default function BookFooter({
           <button
             aria-label="Atrás 5s"
             onClick={handleSkipBack}
-            className="w-8 h-8 fill-primary-700 hover:fill-primary-800 transition-colors"
+            disabled={!hasAudio} // ✅ Deshabilitar si no hay audio
+            className={`w-8 h-8 transition-colors ${
+              hasAudio 
+                ? 'fill-primary-700 hover:fill-primary-800' 
+                : 'fill-gray-400 cursor-not-allowed'
+            }`}
           >
             <SkipBackIcon className="w-6 h-6" />
           </button>
+          
           <button
             aria-label={narrationOn ? 'Pausa' : 'Reproducir'}
             onClick={togglePlay}
-            className="w-10 h-10 fill-primary-700 hover:fill-primary-800 transition-colors"
+            disabled={!hasAudio} // ✅ Deshabilitar si no hay audio
+            className={`w-10 h-10 transition-colors ${
+              hasAudio 
+                ? 'fill-primary-700 hover:fill-primary-800' 
+                : 'fill-gray-400 cursor-not-allowed'
+            }`}
           >
             {narrationOn ? (
               <PauseIcon className="w-8 h-8" />
@@ -107,23 +137,36 @@ export default function BookFooter({
               <PlayIcon className="w-8 h-8" />
             )}
           </button>
+          
           <button
             aria-label="Adelante 5s"
             onClick={handleSkipForward}
-            className="w-8 h-8 fill-primary-700 hover:fill-primary-800 transition-colors"
+            disabled={!hasAudio} // ✅ Deshabilitar si no hay audio
+            className={`w-8 h-8 transition-colors ${
+              hasAudio 
+                ? 'fill-primary-700 hover:fill-primary-800' 
+                : 'fill-gray-400 cursor-not-allowed'
+            }`}
           >
             <SkipForwardIcon className="w-6 h-6" />
           </button>
         </div>
 
-        <div className="flex-shrink-0">
-          <span className="text-xs text-primary-700 font-medium bg-primary-50 px-2 py-1 rounded">
-            {audioSpeed.toFixed(1)}×
-          </span>
-        </div>
+        {/* ✅ Mostrar velocidad solo si hay audio */}
+        {hasAudio && (
+          <div className="flex-shrink-0">
+            <span className="text-xs text-primary-700 font-medium bg-primary-50 px-2 py-1 rounded">
+              {audioSpeed.toFixed(1)}×
+            </span>
+          </div>
+        )}
 
+        {/* Barra de progreso */}
         <div className="relative flex-1">
-          <div className="relative">
+          <div 
+            className="relative cursor-pointer"
+            onClick={handleProgressClick}
+          >
             <progress
               value={current}
               max={total}
@@ -143,7 +186,7 @@ export default function BookFooter({
             />
             
             <div
-              className="absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-primary-700 rounded-full "
+              className="absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-primary-700 rounded-full pointer-events-none"
               style={{
                 left: `calc(${(current / total) * 100}% - 8px)`, // -8px para centrar el círculo
               }}

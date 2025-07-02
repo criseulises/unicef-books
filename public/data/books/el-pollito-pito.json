@@ -19,8 +19,8 @@
         "left": "5%" 
       },
       "textBgColor": "#647411",
-      "videoMp4Url": "/videos/pages/Pag1.mp4",
       "videoWebmUrl": "/videos/pages/Pag1.webm",
+      "videoMp4Url": "/videos/pages/Pag1.mp4",
       "audioUrl": "/audios/pages/PollitoPito_Pagina2.wav"
     },
     {
@@ -71,9 +71,38 @@
         "left": "6%" 
       },
       "textBgColor": "#647411",
-      "videoWebmUrl": "/videos/pages/Pag1.webm",
+      "videoWebmUrl": "/videos/pages/Pag5.webm",
       "videoMp4Url": "/videos/pages/Pag5.mp4",
       "audioUrl": "/audios/pages/PollitoPito_Pagina5.wav"
     }
-  ]
+  ],
+  "glossary": {
+    "title": "Glosario \"El Pollito Pito\"",
+    "terms": [
+      {
+        "id": 1,
+        "word": "Atajo",
+        "definition": "Es un camino mas corto para llegar a un lugar mas rápido.",
+        "pictogram": "/images/glossary/atajo.jpg",
+        "audioUrl": "/audios/glossary/atajo.wav",
+        "videoUrl": "/videos/glossary/Atajo.webm"
+      },
+      {
+        "id": 2,
+        "word": "Bigote",
+        "definition": "Pelo que crece justo encima de la boca.",
+        "pictogram": "/images/glossary/bigote.png",
+        "audioUrl": "/audios/glossary/bigote.wav",
+        "videoUrl": "/videos/glossary/Bigote.webm"
+      },
+      {
+        "id": 3,
+        "word": "Bobo",
+        "definition": "Que actúa de manera tonta o no entiende algo fácilmente.",
+        "pictogram": "/images/glossary/bobo.png",
+        "audioUrl": "/audios/glossary/bobo.wav",
+        "videoUrl": "/videos/glossary/Bobo.webm"
+      }
+    ]
+  }
 }
