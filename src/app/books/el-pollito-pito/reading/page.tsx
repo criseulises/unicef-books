@@ -7,6 +7,7 @@ import Glossary from "components/Glossary";
 import AccessibilitySidebar from "components/AccessibilitySidebar";
 import Sidebar from "components/Sidebar";
 import { useBookData } from "hooks/useBookData";
+import { useContrast } from "hooks/useContrast"; // ✅ Importar el hook de contraste
 
 export default function ReadingPage() {
   // 🔥 Cargar datos del JSON
@@ -26,6 +27,9 @@ export default function ReadingPage() {
   const [textSize, setTextSize] = useState(32);
   const [imageScale, setImageScale] = useState(1);
   const [audioSpeed, setAudioSpeed] = useState(1);
+
+  // ✅ USAR EL HOOK DE CONTRASTE
+  useContrast(contrast);
 
   // 🔥 Estado para controlar el modo de vista
   const [isDefaultView, setIsDefaultView] = useState(true);
@@ -157,7 +161,7 @@ export default function ReadingPage() {
   }
 
   return (
-    <div className="h-screen flex flex-col bg-background">
+    <div className="h-screen flex flex-col contrast-bg"> {/* ✅ Agregar clase de contraste */}
       {/* Header en la parte superior */}
       <BookHeader
         title={bookData.title}
@@ -181,10 +185,13 @@ export default function ReadingPage() {
             totalPagesWithGlossary={totalPagesWithGlossary} // ✅ Pasar el total incluyendo glosario
           />
         ) : isInGlossary ? (
-          // 📚 MOSTRAR GLOSARIO
+          // 📚 MOSTRAR GLOSARIO CON NAVEGACIÓN
           <Glossary 
             glossary={bookData.glossary}
             textSize={textSize}
+            currentPage={current} // ✅ Pasar página actual
+            totalPages={totalPagesWithGlossary} // ✅ Pasar total de páginas
+            onChangePage={handlePageChange} // ✅ Pasar función de navegación
           />
         ) : null}
       </div>

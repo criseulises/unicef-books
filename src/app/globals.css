@@ -1,3 +1,5 @@
+/* globals.css - REEMPLAZAR TODO EL SISTEMA DE CONTRASTE ANTERIOR */
+
 @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;700&display=swap');
 
@@ -18,4 +20,179 @@
   box-shadow: 
     0 10px 60px rgba(0, 0, 0, 0.25),
     0 5px 5px rgba(0, 0, 0, 0.20);
+}
+
+/* 🎨 SISTEMA DE CONTRASTE MEJORADO */
+:root {
+  /* Tema Normal (Contraste 0) */
+  --contrast-bg: #F9F9F9;
+  --contrast-text: #1f2937;
+  --contrast-primary: #225CF0;
+  --contrast-card-bg: #FFFFFF;
+  --contrast-border: #e5e7eb;
+  --contrast-hover: #f3f4f6;
+  --contrast-header-bg: #225CF0;
+  --contrast-header-text: #ffffff;
+}
+
+/* Tema Amarillo (Contraste 1) */
+[data-contrast="1"] {
+  --contrast-bg: #fbbf24;
+  --contrast-text: #000000;
+  --contrast-primary: #000000;
+  --contrast-card-bg: #fde047;
+  --contrast-border: #a16207;
+  --contrast-hover: #f59e0b;
+  --contrast-header-bg: #000000;
+  --contrast-header-text: #ffffff;
+}
+
+/* Tema Negro/Alto Contraste (Contraste 2) */
+[data-contrast="2"] {
+  --contrast-bg: #000000;
+  --contrast-text: #ffffff;
+  --contrast-primary: #ffffff;
+  --contrast-card-bg: #1f2937;
+  --contrast-border: #4b5563;
+  --contrast-hover: #374151;
+  --contrast-header-bg: #ffffff;
+  --contrast-header-text: #000000;
+}
+
+/* Tema Gris (Contraste 3) */
+[data-contrast="3"] {
+  --contrast-bg: #6b7280;
+  --contrast-text: #ffffff;
+  --contrast-primary: #ffffff;
+  --contrast-card-bg: #9ca3af;
+  --contrast-border: #374151;
+  --contrast-hover: #4b5563;
+  --contrast-header-bg: #ffffff;
+  --contrast-header-text: #000000;
+}
+
+/* Tema Verde (Contraste 4) */
+[data-contrast="4"] {
+  --contrast-bg: #10b981;
+  --contrast-text: #ffffff;
+  --contrast-primary: #ffffff;
+  --contrast-card-bg: #34d399;
+  --contrast-border: #065f46;
+  --contrast-hover: #059669;
+  --contrast-header-bg: #ffffff;
+  --contrast-header-text: #000000;
+}
+
+/* 🎯 CLASES PARA APLICAR CONTRASTE */
+.contrast-bg {
+  background-color: var(--contrast-bg) !important;
+}
+
+.contrast-text {
+  color: var(--contrast-text) !important;
+}
+
+.contrast-primary {
+  color: var(--contrast-primary) !important;
+}
+
+.contrast-card-bg {
+  background-color: var(--contrast-card-bg) !important;
+}
+
+.contrast-border {
+  border-color: var(--contrast-border) !important;
+}
+
+.contrast-hover:hover {
+  background-color: var(--contrast-hover) !important;
+}
+
+/* 🔧 ESTILOS ESPECÍFICOS PARA COMPONENTES CON CONTRASTE */
+[data-contrast] .bg-white {
+  background-color: var(--contrast-card-bg) !important;
+}
+
+[data-contrast] .text-gray-700,
+[data-contrast] .text-gray-800,
+[data-contrast] .text-gray-900,
+[data-contrast] .text-gray-600 {
+  color: var(--contrast-text) !important;
+}
+
+[data-contrast] .bg-background {
+  background-color: var(--contrast-bg) !important;
+}
+
+[data-contrast] .bg-primary-50,
+[data-contrast] .bg-primary-100 {
+  background-color: var(--contrast-hover) !important;
+}
+
+[data-contrast] .text-primary-600,
+[data-contrast] .text-primary-700 {
+  color: var(--contrast-primary) !important;
+}
+
+[data-contrast] .border-gray-200,
+[data-contrast] .border-gray-300 {
+  border-color: var(--contrast-border) !important;
+}
+
+[data-contrast] .bg-gray-50 {
+  background-color: var(--contrast-hover) !important;
+}
+
+/* 📱 ESTILOS ESPECÍFICOS PARA GLOSARIO - MÁS FUERTES */
+[data-contrast] .bg-gradient-to-r.from-primary-600.to-primary-700 {
+  background: var(--contrast-header-bg) !important;
+  background-image: none !important;
+}
+
+[data-contrast] .bg-gradient-to-r .text-white {
+  color: var(--contrast-header-text) !important;
+}
+
+[data-contrast] .divide-gray-200 > :not([hidden]) ~ :not([hidden]) {
+  border-color: var(--contrast-border) !important;
+}
+
+/* 🔥 ESTILOS ESPECÍFICOS PARA TEXTO DEL GLOSARIO */
+[data-contrast] .glossary-header-text {
+  color: var(--contrast-header-text) !important;
+}
+
+[data-contrast] .glossary-word {
+  color: var(--contrast-primary) !important;
+}
+
+[data-contrast] .glossary-definition {
+  color: var(--contrast-text) !important;
+}
+
+[data-contrast] .glossary-number {
+  color: var(--contrast-primary) !important;
+}
+
+[data-contrast] .glossary-footer {
+  color: var(--contrast-text) !important;
+}
+
+/* 🎨 FORZAR CONTRASTE EN TABLA DEL GLOSARIO */
+[data-contrast] .glossary-table-header {
+  background-color: var(--contrast-header-bg) !important;
+  background-image: none !important;
+}
+
+[data-contrast] .glossary-row:nth-child(even) {
+  background-color: var(--contrast-hover) !important;
+}
+
+[data-contrast] .glossary-row:nth-child(odd) {
+  background-color: var(--contrast-card-bg) !important;
+}
+
+/* 🎨 TRANSICIONES SUAVES */
+* {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
